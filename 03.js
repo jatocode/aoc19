@@ -38,7 +38,7 @@ function tracewire(wire, wirename) {
             ts++;
             if(grid[`${x},${y}`] == undefined) {
                 grid[`${x},${y}`] = {n:wirename, s: ts};
-            } else if(grid[`${x},${y}`] == wirename) { 
+            } else if(grid[`${x},${y}`].n == wirename) { 
                 // Crossed myself
             } else {
                 let dist = Math.abs(x) + Math.abs(y);
