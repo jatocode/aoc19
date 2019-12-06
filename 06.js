@@ -6,7 +6,7 @@ const data = fs.readFileSync(args[0], 'utf8');
 let lines = data.split('\n');
 let orbits = [];
 for (line of lines) {
-    if(line.length == 0) continue;
+    if (line.length == 0) continue;
     let o1, o2;
     [_, o1, o2] = line.match(/(.*)\)(.*)/);
     if (orbits.length == 0) {
@@ -31,30 +31,27 @@ for (line of lines) {
 let n = 0;
 for (const o of orbits) {
     let c = countParent(o);
-    n += c[0];
-    console.log(o, c[0], c[1]);
+    n += c.length;
 }
-console.log(n);
+console.log('Del 1:' + n);
+
+let you = countParent(orbits.find(x => x.o == 'YOU'));
+let san = countParent(orbits.find(x => x.o == 'SAN'));
+
+// Räkna på skillnaden mellan listorna av föräldrar. Borde bli rätt?
+let difference = you
+    .filter(x => !san.includes(x))
+    .concat(san.filter(x => !you.includes(x)));
+
+console.log('Del 2', difference.length);
 
 function countParent(start) {
-    let c = 0;
     let plist = [];
     (function recurse(current) {
-        if(current.parent != null) {
-            c++;
-            recurse(current.parent);    
-            plist.push(current.parent);
+        if (current.parent != null) {
+            recurse(current.parent);
+            plist.push(current.parent.o);
         }
     })(start);
-    return [c,plist];
+    return plist;
 }
-
-function dfs(callback, start) {
-    (function recurse(current) {
-        console.log(current.children);
-        for (const child of current.children) {
-            recurse(child);
-        }
-        callback(current);
-    })(start);
-};
