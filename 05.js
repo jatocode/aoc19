@@ -45,9 +45,9 @@ function computer(program, input) {
         let modeB = instruction[len - 3] == undefined ? 0 : parseInt(instruction[len - 3]);
         let modeA = instruction[len - 4] == undefined ? 0 : parseInt(instruction[len - 4]);
 
-        let a = (modeC == 0) ? program[pc + 1] : pc + 1;
-        let b = (modeB == 0) ? program[pc + 2] : pc + 2;
-        let o = (modeA == 0) ? program[pc + 3] : pc + 3;
+        a = (modeC == 0) ? program[pc + 1] : pc + 1;
+        b = (modeB == 0) ? program[pc + 2] : pc + 2;
+        o = (modeA == 0) ? program[pc + 3] : pc + 3;
 
         switch (opcode) {
             case 1:
