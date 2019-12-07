@@ -4,40 +4,40 @@ const args = process.argv.slice(2);
 const data = fs.readFileSync(args[0], 'utf8');
 
 let lines = data.split('\n');
-const inputprog = lines[0].split(',').map(x => parseInt(x));
+const inputprogram = lines[0].split(',').map(x => parseInt(x));
 
-//Test
-console.assert(amplifiers([4, 3, 2, 1, 0],
-    [3, 15, 3, 16, 1002, 16, 10, 16, 1, 16, 15, 15, 4, 15, 99, 0, 0]) == 43210);
-console.assert(amplifiers([0, 1, 2, 3, 4], [3, 23, 3, 24, 1002, 24, 10, 24, 1002, 23, -1, 23,
-    101, 5, 23, 23, 1, 24, 23, 23, 4, 23, 99, 0, 0]) == 54321);
-console.assert(amplifiers([1, 0, 4, 3, 2], [3, 31, 3, 32, 1002, 32, 10, 32, 1001, 31, -2, 31, 1007, 31, 0, 33,
-    1002, 33, 7, 33, 1, 33, 31, 31, 1, 32, 31, 31, 4, 31, 99, 0, 0, 0]) == 65210);
-// More test
-findMax([3, 15, 3, 16, 1002, 16, 10, 16, 1, 16, 15, 15, 4, 15, 99, 0, 0]);
-findMax([3, 23, 3, 24, 1002, 24, 10, 24, 1002, 23, -1, 23,
-    101, 5, 23, 23, 1, 24, 23, 23, 4, 23, 99, 0, 0]);
-findMax([3, 31, 3, 32, 1002, 32, 10, 32, 1001, 31, -2, 31, 1007, 31, 0, 33,
-    1002, 33, 7, 33, 1, 33, 31, 31, 1, 32, 31, 31, 4, 31, 99, 0, 0, 0]);
+const test1 = [3, 26, 1001, 26, -4, 26, 3, 27, 1002, 27, 2, 27, 1, 27, 26,
+    27, 4, 27, 1001, 28, -1, 28, 1005, 28, 6, 99, 0, 0, 5];
+const test2 = [3,52,1001,52,-5,52,3,53,1,52,56,54,1007,54,5,55,1005,55,26,1001,54,
+    -5,54,1105,1,12,1,53,54,53,1008,54,0,55,1001,55,1,55,2,53,55,53,4,
+    53,1001,56,-1,56,1005,56,6,99,0,0,0,0,10];
 
-findMax(inputprog);
+let processes = [];
 
-function findMax(program) {
+console.assert(amplifiers([9, 8, 7, 6, 5], test1) == 139629729);
+console.assert(amplifiers([9,7,8,5,6], test2) == 18216);
+console.assert(findMax(test1)[1] == 139629729);
+console.assert(findMax(test2)[1] == 18216);
+
+// Del 2
+console.log(findMax(inputprogram)[1]);
+
+function findMax(program, min = 5, max = 10) {
     let maxoutput = 0;
     let maxps = [];
-    for (let a1 = 0; a1 < 5; a1++) {
-        for (let a2 = 0; a2 < 5; a2++) {
-            if(a2 == a1) continue;
-            for (let a3 = 0; a3 < 5; a3++) {
-                if(a3 == a2 || a3 == a1) continue;
-                for (let a4 = 0; a4 < 5; a4++) {
-                    if(a4 == a3|| a4 == a2 || a4 == a1) continue;
-                    for (let a5 = 0; a5 < 5; a5++) {
-                        if(a5 == a4|| a5 == a3 || a5 == a2 || a5 == a1) continue;
+    // Ok, det här känns onödigt knövligt för att generera phase-grejorna men orkar inte städa
+    for (let a1 = min; a1 < max; a1++) {
+        for (let a2 = min; a2 < max; a2++) {
+            if (a2 == a1) continue;
+            for (let a3 = min; a3 < max; a3++) {
+                if (a3 == a2 || a3 == a1) continue;
+                for (let a4 = min; a4 < max; a4++) {
+                    if (a4 == a3 || a4 == a2 || a4 == a1) continue;
+                    for (let a5 = min; a5 < max; a5++) {
+                        if (a5 == a4 || a5 == a3 || a5 == a2 || a5 == a1) continue;
                         let ps = [a1, a2, a3, a4, a5];
-                        let output = amplifiers(ps, [...program]);
-                        //console.log(ps, output);
-                        if(output > maxoutput) {
+                        let output = amplifiers(ps, program);
+                        if (output > maxoutput) {
                             maxoutput = output;
                             maxps = ps;
                         }
@@ -46,24 +46,39 @@ function findMax(program) {
             }
         }
     }
-    console.log(maxps, maxoutput);
+    return [maxps, maxoutput];
 }
 
 function amplifiers(phaseSeq, program) {
-    let input = 0;
-    let output = 0;
-    for (const phase of phaseSeq) {
-        input = output;
-        output = computer([...program], phase, input);
+    processes = []; // Börja om
+    const amps = 5;
+    for (let i = 0; i < amps; i++) {
+        processes.push({
+            pc: 0,
+            p: [...program],
+            w: true,
+            i: 0,
+            o: 0,
+            firstInput: false,
+            phasePassDone: false,
+            done: false
+        });
     }
-    return output;
+    while (processes[4].done == false) {
+        computer(0, 1, phaseSeq[0]);
+        computer(1, 2, phaseSeq[1]);
+        computer(2, 3, phaseSeq[2]);
+        computer(3, 4, phaseSeq[3]);
+        computer(4, 0, phaseSeq[4]);
+    }
+    return processes[4].o;
 }
 
-function computer(program, phase, input) {
-    let a, b, o, pc = 0;
+function computer(amp, nextamp, phase) {
+    let a, b, o;
     let running = true;
-    let phasePassDone = false;
-    let output = 0;
+    let pc = processes[amp].pc;
+    let program = processes[amp].p;
     while (running) {
         let instruction = program[pc].toString();
         let len = instruction.length - 1;
@@ -88,17 +103,30 @@ function computer(program, phase, input) {
                 pc += 4;
                 break;
             case 3:
-                if (!phasePassDone) {
+                if (!processes[amp].phasePassDone) {
                     program[a] = phase;
-                    phasePassDone = true;
+                    processes[amp].phasePassDone = true;
+                    pc += 2;
                 } else {
-                    program[a] = input;
+                    if (processes[amp].w == false) {
+                        program[a] = processes[amp].i;
+                        processes[amp].w = true;
+                        pc += 2;
+                    } else {
+                        if (amp == 0 && !processes[amp].firstInput) {
+                            program[a] = 0; // Fire up!
+                            processes[amp].firstInput = true;
+                            pc += 2;
+                        } else {
+                            running = false;
+                        }
+                    }
                 }
-                pc += 2;
                 break;
             case 4:
-                //console.log(`Output (${pc}): ${program[a]}`);
-                output = program[a];
+                processes[nextamp].w = false;
+                processes[nextamp].i = program[a];
+                processes[amp].o = program[a];
                 pc += 2;
                 break;
             case 5:
@@ -133,12 +161,12 @@ function computer(program, phase, input) {
                 break;
             case 99:
                 running = false;
+                processes[amp].done = true;
                 break;
             default:
-                console.log('?', opcode);
                 break;
         }
     }
-    return output;
+    processes[amp].pc = pc;
 }
 
