@@ -8,14 +8,14 @@ const inputprogram = lines[0].split(',').map(x => parseInt(x));
 
 const test1 = [3, 26, 1001, 26, -4, 26, 3, 27, 1002, 27, 2, 27, 1, 27, 26,
     27, 4, 27, 1001, 28, -1, 28, 1005, 28, 6, 99, 0, 0, 5];
-const test2 = [3,52,1001,52,-5,52,3,53,1,52,56,54,1007,54,5,55,1005,55,26,1001,54,
-    -5,54,1105,1,12,1,53,54,53,1008,54,0,55,1001,55,1,55,2,53,55,53,4,
-    53,1001,56,-1,56,1005,56,6,99,0,0,0,0,10];
+const test2 = [3, 52, 1001, 52, -5, 52, 3, 53, 1, 52, 56, 54, 1007, 54, 5, 55, 1005, 55, 26, 1001, 54,
+    -5, 54, 1105, 1, 12, 1, 53, 54, 53, 1008, 54, 0, 55, 1001, 55, 1, 55, 2, 53, 55, 53, 4,
+    53, 1001, 56, -1, 56, 1005, 56, 6, 99, 0, 0, 0, 0, 10];
 
 let processes = [];
 
 console.assert(amplifiers([9, 8, 7, 6, 5], test1) == 139629729);
-console.assert(amplifiers([9,7,8,5,6], test2) == 18216);
+console.assert(amplifiers([9, 7, 8, 5, 6], test2) == 18216);
 console.assert(findMax(test1)[1] == 139629729);
 console.assert(findMax(test2)[1] == 18216);
 
@@ -25,25 +25,12 @@ console.log(findMax(inputprogram)[1]);
 function findMax(program, min = 5, max = 10) {
     let maxoutput = 0;
     let maxps = [];
-    // Ok, det här känns onödigt knövligt för att generera phase-grejorna men orkar inte städa
-    for (let a1 = min; a1 < max; a1++) {
-        for (let a2 = min; a2 < max; a2++) {
-            if (a2 == a1) continue;
-            for (let a3 = min; a3 < max; a3++) {
-                if (a3 == a2 || a3 == a1) continue;
-                for (let a4 = min; a4 < max; a4++) {
-                    if (a4 == a3 || a4 == a2 || a4 == a1) continue;
-                    for (let a5 = min; a5 < max; a5++) {
-                        if (a5 == a4 || a5 == a3 || a5 == a2 || a5 == a1) continue;
-                        let ps = [a1, a2, a3, a4, a5];
-                        let output = amplifiers(ps, program);
-                        if (output > maxoutput) {
-                            maxoutput = output;
-                            maxps = ps;
-                        }
-                    }
-                }
-            }
+    let seqs = sequences(min, max);
+    for (const ps of seqs) {
+        let output = amplifiers(ps, program);
+        if (output > maxoutput) {
+            maxoutput = output;
+            maxps = ps;
         }
     }
     return [maxps, maxoutput];
@@ -170,3 +157,24 @@ function computer(amp, nextamp, phase) {
     processes[amp].pc = pc;
 }
 
+// Ok, det här känns onödigt knövligt för att generera phase-grejorna men orkar inte städa
+function sequences(min = 5, max = 10) {
+    let s = [];
+    for (let a1 = min; a1 < max; a1++) {
+        for (let a2 = min; a2 < max; a2++) {
+            if (a2 == a1) continue;
+            for (let a3 = min; a3 < max; a3++) {
+                if (a3 == a2 || a3 == a1) continue;
+                for (let a4 = min; a4 < max; a4++) {
+                    if (a4 == a3 || a4 == a2 || a4 == a1) continue;
+                    for (let a5 = min; a5 < max; a5++) {
+                        if (a5 == a4 || a5 == a3 || a5 == a2 || a5 == a1) continue;
+                        let ps = [a1, a2, a3, a4, a5];
+                        s.push(ps);
+                    }
+                }
+            }
+        }
+    }
+    return s;
+}
