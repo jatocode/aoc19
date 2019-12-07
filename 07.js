@@ -16,41 +16,39 @@ let processes = [];
 
 console.assert(amplifiers([9, 8, 7, 6, 5], test1) == 139629729);
 console.assert(amplifiers([9, 7, 8, 5, 6], test2) == 18216);
-console.assert(findMax(test1)[1] == 139629729);
-console.assert(findMax(test2)[1] == 18216);
+console.assert(findMax(test1) == 139629729);
+console.assert(findMax(test2) == 18216);
 
 // Del 2
-console.log(findMax(inputprogram)[1]);
+console.log(findMax(inputprogram));
 
 function findMax(program, min = 5, max = 10) {
     let maxoutput = 0;
-    let maxps = [];
     let seqs = sequences(min, max);
     for (const ps of seqs) {
         let output = amplifiers(ps, program);
         if (output > maxoutput) {
             maxoutput = output;
-            maxps = ps;
         }
     }
-    return [maxps, maxoutput];
+    return maxoutput;
 }
 
 function amplifiers(phaseSeq, program) {
-    processes = []; // Börja om
-    const amps = 5;
-    for (let i = 0; i < amps; i++) {
+    processes = []; 
+    for (let i = 0; i < 5; i++) {
         processes.push({
             pc: 0,
             p: [...program],
-            w: true,
             i: 0,
             o: 0,
-            firstInput: false,
-            phasePassDone: false,
+            wait: true,
+            phase: false,
             done: false
         });
     }
+    processes[0].wait = false; // Vänta inte på första input, ta 0:an
+
     while (processes[4].done == false) {
         computer(0, 1, phaseSeq[0]);
         computer(1, 2, phaseSeq[1]);
@@ -79,7 +77,6 @@ function computer(amp, nextamp, phase) {
         a = (modeC == 0) ? program[pc + 1] : pc + 1;
         b = (modeB == 0) ? program[pc + 2] : pc + 2;
         o = (modeA == 0) ? program[pc + 3] : pc + 3;
-
         switch (opcode) {
             case 1:
                 program[o] = program[a] + program[b];
@@ -90,28 +87,22 @@ function computer(amp, nextamp, phase) {
                 pc += 4;
                 break;
             case 3:
-                if (!processes[amp].phasePassDone) {
+                if (!processes[amp].phase) {
                     program[a] = phase;
-                    processes[amp].phasePassDone = true;
+                    processes[amp].phase = true;
                     pc += 2;
                 } else {
-                    if (processes[amp].w == false) {
+                    if (processes[amp].wait == false) {
                         program[a] = processes[amp].i;
-                        processes[amp].w = true;
+                        processes[amp].wait = true;
                         pc += 2;
                     } else {
-                        if (amp == 0 && !processes[amp].firstInput) {
-                            program[a] = 0; // Fire up!
-                            processes[amp].firstInput = true;
-                            pc += 2;
-                        } else {
-                            running = false;
-                        }
+                        running = false;
                     }
                 }
                 break;
             case 4:
-                processes[nextamp].w = false;
+                processes[nextamp].wait = false;
                 processes[nextamp].i = program[a];
                 processes[amp].o = program[a];
                 pc += 2;
