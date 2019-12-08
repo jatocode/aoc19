@@ -4,13 +4,13 @@ const args = process.argv.slice(2);
 const data = fs.readFileSync(args[0], 'utf8');
 let lines = data.split('\n');
 
-let image = [];
 const imagedata = lines[0].split('');
 
 // decode('123456789012', 3, 2);
-decode(imagedata, 25, 6);
+const image = decode(imagedata, 25, 6);
 
 function decode(imagedata, width, height) {
+    let image = [];
     let min0 = Number.MAX_SAFE_INTEGER;
     let min0layer = -1;
     let l = 0;
@@ -41,7 +41,8 @@ function decode(imagedata, width, height) {
         l++;
         image.push(layer);
     }
-    console.log(layerinfo[min0layer], layerinfo[min0layer].num1 * layerinfo[min0layer].num2);
+    console.log(layerinfo[min0layer], 'Del 1:', layerinfo[min0layer].num1 * layerinfo[min0layer].num2);
+    return image;
 }
 
 
