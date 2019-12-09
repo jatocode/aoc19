@@ -11,7 +11,12 @@ const inputprogram = lines[0].split(',').map(x => parseInt(x));
 // computer([1102,34915192,34915192,7,4,7,99,0], 0);
 // computer([104,1125899906842624,99],0);
 
+
+console.log('Del 1: ');
 computer(inputprogram, 1)
+
+console.log('Del 2: ');
+computer(inputprogram, 2);
 
 function computer(program, input) {
     let a, b, o, pc = 0;
