@@ -48,11 +48,13 @@ function paintrobot(x) {
     } else {
         const d = [[0, -1], [1, 0], [0, 1], [-1, 0]];
         switch (x) {
-            case 0: dir--; // Turn left 90
-            case 1: dir++;// Turn right 90
+            case 0: dir--; break; // Turn left 90
+            case 1: dir++; break; // Turn right 90
         }
-        rx += d[dir % d.length][0];
-        ry += d[dir % d.length][1];
+        if(dir == -1) dir = 3;
+        if(dir == 4) dir = 0;
+        rx += d[dir][0];
+        ry += d[dir][1];
     }
 }
 
