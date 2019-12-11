@@ -32,9 +32,13 @@ function paintrobot(x) {
         // Paint
         switch (x) {
             case 0:
+                // if (hull[ry] == undefined) hull[ry] = [];
+                // hull[ry][rx] = '.';
                 hull[`${rx},${ry}`] = '.'; 
                 break;
             case 1:
+                // if (hull[ry] == undefined) hull[ry] = [];
+                // hull[ry][rx] = '#';
                 hull[`${rx},${ry}`] = '#'; 
                 break;
             default: break;
@@ -42,7 +46,6 @@ function paintrobot(x) {
         if(visited[`${rx},${ry}`] == undefined) visited[`${rx},${ry}`] = 0;
         visited[`${rx},${ry}`] += 1;
     } else {
-        // Turn
         const d = [[0, -1], [1, 0], [0, 1], [-1, 0]];
         switch (x) {
             case 0: dir--; // Turn left 90
@@ -54,9 +57,9 @@ function paintrobot(x) {
 }
 
 function camera() {
-    let color = hull[`${rx},${ry}`];
+    let color = hull[`${rx},${ry}`] == undefined ? '.' : hull[`${rx},${ry}`];
     //let color = hull[ry] == undefined ? '.' : hull[ry][rx] == undefined ? '.' : hull[ry][rx] == undefined;
-    return color == undefined ? '.' : color;
+    return color == '.' ? 0 : 1;
 }
 
 function intcode(pid, input = () => { return 0 }, output = (x) => { console.log(`Output: ${x}`) }) {
