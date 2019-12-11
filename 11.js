@@ -1,4 +1,5 @@
 const fs = require('fs');
+const ctx = require('axel');
 const args = process.argv.slice(2);
 
 const data = fs.readFileSync(args[0], 'utf8');
@@ -25,8 +26,8 @@ let startwhite = false;
 let hull = [];
 let visited = [];
 
-intcode(0, camera, paintrobot);
-console.log('Del 1', Object.keys(visited).length);
+//intcode(0, camera, paintrobot);
+//console.log('Del 1', Object.keys(visited).length);
 
 console.log('Del 2');
 // Nollställ för Del 2. 
@@ -38,18 +39,32 @@ dir = 0;
 oc = 0;
 startwhite = true;
 hull = [];
+
+ctx.clear();
+
 intcode(0, camera, paintrobot);
+displayHull();
 
-for (const row of hull) {
-    let out = '';
-    for(const panel of row) {
-        if(panel != '#') out += ' ';
-        else out += '#';
+async function displayHull() {
+    ctx.bg(0, 0, 0);
+    ctx.clear();
+    for (let y = 0; y < 6; y++) {
+        for (let x = 0; x < 50; x++) {
+            if (hull[y] != undefined && hull[y][x] != undefined) {
+                if (hull[y][x] == '#') {
+                    ctx.bg(0, 128, 255);
+                    ctx.point(5 + x, 5 + y);
+                } else {
+                    ctx.bg(0, 0, 0);
+                    ctx.point(5 + x, 5 + y);
+                }
+            }
+        }
     }
-    console.log(out);
 }
+ctx.cursor.restore();
 
-function paintrobot(x) {
+async function paintrobot(x) {
     if (oc++ % 2 == 0) {
         // Paint
         switch (x) {
@@ -63,7 +78,7 @@ function paintrobot(x) {
                 break;
             default: break;
         }
-        if(visited[`${rx},${ry}`] == undefined) visited[`${rx},${ry}`] = 0;
+        if (visited[`${rx},${ry}`] == undefined) visited[`${rx},${ry}`] = 0;
         visited[`${rx},${ry}`] += 1;
     } else {
         const d = [[0, -1], [1, 0], [0, 1], [-1, 0]];
@@ -71,15 +86,15 @@ function paintrobot(x) {
             case 0: dir--; break; // Turn left 90
             case 1: dir++; break; // Turn right 90
         }
-        if(dir == -1) dir = 3;
-        if(dir == 4) dir = 0;
+        if (dir == -1) dir = 3;
+        if (dir == 4) dir = 0;
         rx += d[dir][0];
         ry += d[dir][1];
     }
 }
 
 function camera() {
-    if(startwhite) {
+    if (startwhite) {
         startwhite = false;
         return 1;
     }

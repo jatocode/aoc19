@@ -1,0 +1,22 @@
+{
+  "name": "aoc19",
+  "version": "0.1.0",
+  "description": "Using Javascript",
+  "main": "01.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jatocode/aoc19.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jatocode/aoc19/issues"
+  },
+  "homepage": "https://github.com/jatocode/aoc19#readme",
+  "dependencies": {
+    "axel": "0.0.3"
+  }
+}
