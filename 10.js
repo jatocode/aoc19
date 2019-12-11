@@ -10,27 +10,30 @@ for (line of lines) {
     asteroids.push(line.trim().split(''));
 }
 
-//findBest();
+findBest();
+asteroids[17][13] = '.'; // x/y blir vända här!!
 
-let result = calcLines(8,3);
+let result = calcLines(13,17);
 targets = result[1];
-
 let currentIndex = targets.findIndex(x => x.deg == -90);
 let hit = 1;
 let current = targets[currentIndex % targets.length];
-let prev = undefined;
-while(hit < 205) {
-    current = targets[currentIndex % targets.length];
-    currentIndex++;
 
-    if(prev != undefined && current.deg == prev.deg) continue; // Samma stråle
-    if(current.hit > 0) continue;
-    prev = current;
+while(hit < 400) {
+    current = targets[currentIndex % targets.length];
+    while(current.hit > 0) current = targets[currentIndex++ % targets.length];
     current.hit = hit++;
+
     asteroids[current.y][current.x] = current.hit;
-    if(current.hit == 200) console.log(current);
+    if(current.hit == 200) { console.log('Del 2', current.x * 100 + current.y ); }
+
+    if(hit == targets.length + 1) break;
+
+    // Leta upp nästa vinkel
+    while(targets[currentIndex % targets.length].deg == current.deg) {
+        currentIndex++;
+    }; 
 }
-//console.table(asteroids);
 
 //console.table(asteroids);
 //findBest(); // Del 1
@@ -58,7 +61,7 @@ function calcLines(fx, fy) {
     for (let y = 0; y < asteroids.length; y++) {
         const arow = asteroids[y];
         for (let x = 0; x < arow.length; x++) {
-            if (arow[x] == '#') {
+            if (arow[x] != '.') {
                 let dg = calcLoS(fx, fy, x, y);
                 linjer.add(dg);
 
@@ -71,7 +74,7 @@ function calcLines(fx, fy) {
     // Sortera på grad och sen avstånd
     targets = targets.sort((a,b) => a.deg - b.deg || a.dist - b.dist);
 
-    return [linjer.size - 1, targets];
+    return [linjer.size - 1, targets, Array.from(linjer).sort()];
 }
 
 function calcLoS(x1, y1, x2, y2) {
