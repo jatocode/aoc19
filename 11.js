@@ -19,7 +19,7 @@ let processes = [{
 let rx = 0;
 let ry = 0;
 let dir = 0;
-let oc = 1;
+let oc = 0;
 
 let hull = [];
 let visited = [];
