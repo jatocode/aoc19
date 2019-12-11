@@ -6,23 +6,66 @@ const data = fs.readFileSync(args[0], 'utf8');
 let lines = data.split('\n');
 const inputprogram = lines[0].split(',').map(x => parseInt(x));
 
-let processes = [];
-processes.push({
+let processes = [{
     pc: 0,
     p: [...inputprogram],
     i: 0,
     o: 0,
     wait: true,
     done: false
-});
+}];
 
-function intcode(pid, program, input = () => { return 0}, output = (x) => { console.log(`Output: ${x}`) } ) {
-    let a, b, o, pc = 0;
+
+let rx = 0;
+let ry = 0;
+let dir = 0;
+let oc = 1;
+
+let hull = [];
+let visited = [];
+
+intcode(0, camera, paintrobot);
+console.log(Object.keys(visited).length);
+
+function paintrobot(x) {
+    if (oc++ % 2 == 0) {
+        // Paint
+        switch (x) {
+            case 0:
+                hull[`${rx},${ry}`] = '.'; 
+                break;
+            case 1:
+                hull[`${rx},${ry}`] = '#'; 
+                break;
+            default: break;
+        }
+        if(visited[`${rx},${ry}`] == undefined) visited[`${rx},${ry}`] = 0;
+        visited[`${rx},${ry}`] += 1;
+    } else {
+        // Turn
+        const d = [[0, -1], [1, 0], [0, 1], [-1, 0]];
+        switch (x) {
+            case 0: dir--; // Turn left 90
+            case 1: dir++;// Turn right 90
+        }
+        rx += d[dir % d.length][0];
+        ry += d[dir % d.length][1];
+    }
+}
+
+function camera() {
+    let color = hull[`${rx},${ry}`];
+    //let color = hull[ry] == undefined ? '.' : hull[ry][rx] == undefined ? '.' : hull[ry][rx] == undefined;
+    return color == undefined ? '.' : color;
+}
+
+function intcode(pid, input = () => { return 0 }, output = (x) => { console.log(`Output: ${x}`) }) {
+    let a, b, o = 0;
     let rb = 0;
     let running = true;
     let lastout = undefined;
 
-    let program = processes[pid].program;
+    let program = processes[pid].p;
     let pc = processes[pid].pc;
     // Två hjälpmetoder
     let get = (pc) => {
@@ -31,9 +74,9 @@ function intcode(pid, program, input = () => { return 0}, output = (x) => { cons
     let getPointer = (pc, mode) => {
         switch (mode) {
             case 0: return program[pc];
-            case 1: return pc; 
+            case 1: return pc;
             case 2: return rb + program[pc];
-        }  
+        }
     }
 
     while (running) {
@@ -100,7 +143,7 @@ function intcode(pid, program, input = () => { return 0}, output = (x) => { cons
                 break;
             case 9:
                 rb += get(a);
-                pc +=2;
+                pc += 2;
                 break;
             case 99:
                 running = false;
