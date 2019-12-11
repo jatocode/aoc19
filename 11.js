@@ -20,26 +20,46 @@ let rx = 0;
 let ry = 0;
 let dir = 0;
 let oc = 0;
+let startwhite = false;
 
 let hull = [];
 let visited = [];
 
 intcode(0, camera, paintrobot);
-console.log(Object.keys(visited).length);
+console.log('Del 1', Object.keys(visited).length);
+
+console.log('Del 2');
+// Nollställ för Del 2. 
+processes[0].p = [...inputprogram];
+processes[0].pc = 0;
+rx = 0;
+ry = 0;
+dir = 0;
+oc = 0;
+startwhite = true;
+hull = [];
+intcode(0, camera, paintrobot);
+
+for (const row of hull) {
+    let out = '';
+    for(const panel of row) {
+        if(panel != '#') out += ' ';
+        else out += '#';
+    }
+    console.log(out);
+}
 
 function paintrobot(x) {
     if (oc++ % 2 == 0) {
         // Paint
         switch (x) {
             case 0:
-                // if (hull[ry] == undefined) hull[ry] = [];
-                // hull[ry][rx] = '.';
-                hull[`${rx},${ry}`] = '.'; 
+                if (hull[ry] == undefined) hull[ry] = [];
+                hull[ry][rx] = '.';
                 break;
             case 1:
-                // if (hull[ry] == undefined) hull[ry] = [];
-                // hull[ry][rx] = '#';
-                hull[`${rx},${ry}`] = '#'; 
+                if (hull[ry] == undefined) hull[ry] = [];
+                hull[ry][rx] = '#';
                 break;
             default: break;
         }
@@ -59,8 +79,11 @@ function paintrobot(x) {
 }
 
 function camera() {
-    let color = hull[`${rx},${ry}`] == undefined ? '.' : hull[`${rx},${ry}`];
-    //let color = hull[ry] == undefined ? '.' : hull[ry][rx] == undefined ? '.' : hull[ry][rx] == undefined;
+    if(startwhite) {
+        startwhite = false;
+        return 1;
+    }
+    let color = hull[ry] == undefined ? '.' : hull[ry][rx] == undefined ? '.' : hull[ry][rx];
     return color == '.' ? 0 : 1;
 }
 
