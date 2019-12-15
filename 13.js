@@ -47,7 +47,7 @@ function game(out) {
                 case 4: o = 'o'; 
                     ballx = x;
                     ctx.bg(220, 220, 22); 
-                    //msleep(10); 
+                    msleep(10); 
                 break;
             }
             if (x == -1 && y == 0) {
