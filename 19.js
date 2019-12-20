@@ -20,6 +20,7 @@ let space = [];
 tractorbeam();
 display(space);
 console.log('Del 1:', tot);
+find10x10(0,0,2,2);
 
 function tractorbeam() {
     for (y = 0; y < maxy - 1; y++) {
@@ -44,7 +45,7 @@ function output(out) {
 function display(space) {
     console.log();
     for (let y = 0; y < maxy - 1; y++) {
-        let row = '';
+        let row = y + '|';
         for (let x = 0; x < maxx; x++) {
             row += space[`${x},${y}`];
         }
@@ -52,3 +53,26 @@ function display(space) {
     }
 }
 
+
+function find10x10(startx, starty, sizex, sizey) {
+    if(startx > maxx) {
+        find10x10(0, starty+1, sizex, sizey);
+        return;
+    }
+    if(starty > maxy) {
+        console.log('Not found');
+        return;
+    }
+    if( beamed(startx, starty) &&         beamed(startx + sizex, starty) &&
+        beamed(startx, starty + sizey) && beamed(startx + sizex, starty + sizey)) {
+        console.log('Fit at', startx, starty);
+        return;
+    } else {
+       // console.log(startx, starty);
+        find10x10(startx+1, starty, sizex, sizey);
+    } 
+}
+
+function beamed(x,y) {
+    return space[`${x},${y}`] == '#';
+}
