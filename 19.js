@@ -11,27 +11,36 @@ let x = 0;
 let y = 0;
 let c = 0;
 
-let maxx = 50;
-let maxy = 50;
+let maxx = 2000;
+let maxy = 2000;
 
 let tot = 0;
 
 let space = [];
-tractorbeam();
-display(space);
+//tractorbeam(1000, 1000);
+tractorbeam(0, 0);
 console.log('Del 1:', tot);
-find10x10(0,0,2,2);
+find(8);
+find(50);
+find(100);
+//display2(space);
 
-function tractorbeam() {
-    for (y = 0; y < maxy - 1; y++) {
-        for (x = 0; x < maxx; x++) {
-            intcode([...memory], beam, output);     
+function tractorbeam(startx=0, starty=0) {
+    for (y = starty; y < maxy - 1; y++) {
+        let fr = false;
+        for (x = startx2; x < maxx && fr == false; x++) {
+            let prev = beamed(x - 1,y);
+            intcode([...memory], beam, output);
+            if(prev && !beamed(x,y)) fr = true; // Snabba på det hela
+        }
+        if(y % 50 == 0) {
+            console.log(y, maxy);
         }
     }
 }
 
 function beam() {
-    switch(c++ % 2) {
+    switch (c++ % 2) {
         case 0: return x;
         case 1: return y;
     }
@@ -39,40 +48,65 @@ function beam() {
 
 function output(out) {
     tot += out;
-    space[`${x},${y}`] = out == 0 ? '.':'#';
+    space[`${x},${y}`] = out == 0 ? '.' : '#';
 }
 
 function display(space) {
     console.log();
+    let row = '   ';
+    for (let x = 0; x < maxx; x++) {
+        row += ('0' + x).slice(-2) + ' ';
+    }
+    console.log(row);
     for (let y = 0; y < maxy - 1; y++) {
-        let row = y + '|';
+        let row = ('0' + y).slice(-2) + '|';
         for (let x = 0; x < maxx; x++) {
-            row += space[`${x},${y}`];
+            row += ' ' + space[`${x},${y}`] + ' ';
         }
         console.log(row);
     }
 }
 
-
-function find10x10(startx, starty, sizex, sizey) {
-    if(startx > maxx) {
-        find10x10(0, starty+1, sizex, sizey);
-        return;
+function display2(space) {
+    console.log();
+    for (let y = 0; y < maxy - 1; y++) {
+        let row = '';
+        for (let x = 0; x < maxx; x++) {
+            row += space[`${x},${y}`] == undefined ? ' ' : space[`${x},${y}`];
+        }
+        console.log(row);
     }
-    if(starty > maxy) {
-        console.log('Not found');
-        return;
-    }
-    if( beamed(startx, starty) &&         beamed(startx + sizex, starty) &&
-        beamed(startx, starty + sizey) && beamed(startx + sizex, starty + sizey)) {
-        console.log('Fit at', startx, starty);
-        return;
-    } else {
-       // console.log(startx, starty);
-        find10x10(startx+1, starty, sizex, sizey);
-    } 
 }
 
-function beamed(x,y) {
-    return space[`${x},${y}`] == '#';
+function find(size) {
+    let found = false;
+    size -= 1;
+    for (let y = 0; y < maxy - 1 && found == false; y++) {
+        let fr = false;
+        for (let x = 0; x < maxx && found == false; x++) {
+            if(fr == true && !beamed(x,y)) break;
+            if(beamed(x,y)) fr = true;
+
+            if (beamed(x, y) && beamed(x + size, y) &&
+                beamed(x, y + size) && beamed(x + size, y + size)
+            ) {
+                console.log('Found', size+1, x, y, x*10000+y);
+                set(x, y, size + 1);
+                set(x + size, y, size + 1);
+                set(x, y + size, size + 1);
+                set(x + size, y + size, size + 1);
+                found = true;
+            }
+        }
+    }
+}
+
+function beamed(x, y) {
+    return space[`${x},${y}`] != '.' && space[`${x},${y}`] != undefined;
+}
+
+function set(x, y, s = 'O') {
+    if (beamed(x, y)) {
+        space[`${x},${y}`] = s;
+    }
 }
