@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/jatocode/aoc19#readme",
   "dependencies": {
-    "axel": "0.0.3"
+    "axel": "0.0.3",
+    "node-lzw": "^0.3.1"
   }
 }

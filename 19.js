@@ -11,21 +11,19 @@ let x = 0;
 let y = 0;
 let c = 0;
 
-let maxx = 2000;
-let maxy = 2000;
+let maxx = 1500;
+let maxy = 1500;
 
 let tot = 0;
 
 let space = [];
-//tractorbeam(1000, 1000);
-tractorbeam(0, 0);
+tractorbeam();
 console.log('Del 1:', tot);
-find(8);
-find(50);
 find(100);
 //display2(space);
 
 function tractorbeam(startx=0, starty=0) {
+    let startx2 = startx;
     for (y = starty; y < maxy - 1; y++) {
         let fr = false;
         for (x = startx2; x < maxx && fr == false; x++) {
@@ -33,6 +31,7 @@ function tractorbeam(startx=0, starty=0) {
             intcode([...memory], beam, output);
             if(prev && !beamed(x,y)) fr = true; // Snabba på det hela
         }
+        startx2 = Math.round(y*1.1); // Börja lite smartare
         if(y % 50 == 0) {
             console.log(y, maxy);
         }
